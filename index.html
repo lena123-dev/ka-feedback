@@ -70,11 +70,15 @@ dl{text-align:left;margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap
 <div class="hint" id="catHint"></div><div class="err" id="e-cat"></div>
 </div>
 <div class="f">
+<label class="req" for="sub">Unterkategorie</label>
+<select id="sub" disabled><option value="">Bitte zuerst eine Kategorie wählen</option></select>
+<div class="err" id="e-sub"></div>
+</div>
+<div class="f">
 <label class="req" for="txt">Beschreibung</label>
 <textarea id="txt" maxlength="1000" placeholder="Beschreiben Sie kurz, was Sie gesehen haben." aria-describedby="cnt e-txt"></textarea>
 <div class="hint"><span id="cnt">0 / 1000</span> Zeichen · nur Text, Formatierungen werden entfernt</div><div class="err" id="e-txt"></div>
 </div>
-<div id="extra"></div>
 </section>
 
 <section class="card">
@@ -104,25 +108,16 @@ dl{text-align:left;margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap
 
 <section class="card">
 <h2>Kontakt</h2>
-<p class="hint" style="margin:-6px 0 14px">Bitte hinterlegen Sie eine E-Mail-Adresse oder Telefonnummer. Wenn wir bei Rückfragen niemanden erreichen können, muss Ihre Meldung aus Mangel an Informationen geschlossen werden.</p>
-<div class="f">
-<label for="mail">E-Mail für Status-Updates</label>
-<input id="mail" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="name@beispiel.de">
-<div class="hint">Freiwillig. Sie erhalten eine Bestätigung mit den Angaben Ihrer Meldung und Informationen zum Stand.</div><div class="err" id="e-mail"></div>
-</div>
-<div class="f">
-<label for="tel">Telefonnummer</label>
-<input id="tel" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="0721 1234567">
-<div class="hint">Freiwillig. Für Rückfragen zu Ihrer Meldung.</div><div class="err" id="e-tel"></div>
-</div>
-<details>
-<summary>Name angeben (freiwillig)</summary>
-<div class="row" style="margin-top:12px">
+<p class="hint" style="margin:-6px 0 14px">Alle Angaben sind freiwillig. Ohne Kontaktmöglichkeit muss Ihre Meldung bei Rückfragen aus Mangel an Informationen geschlossen werden.</p>
+<div class="row">
 <div class="f"><label for="vn">Vorname</label><input id="vn" autocomplete="given-name" maxlength="60"></div>
 <div class="f"><label for="nn">Name</label><input id="nn" autocomplete="family-name" maxlength="60"></div>
 </div>
-<div class="hint">Für die Bearbeitung der Meldung ist kein Name nötig.</div>
-</details>
+<div class="row">
+<div class="f"><label for="mail">E-Mail</label><input id="mail" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="name@beispiel.de"><div class="err" id="e-mail"></div></div>
+<div class="f"><label for="tel">Telefonnummer</label><input id="tel" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="0721 1234567"><div class="err" id="e-tel"></div></div>
+</div>
+<div class="hint">Mit E-Mail-Adresse erhalten Sie eine Bestätigung und Informationen zum Stand Ihrer Meldung.</div>
 </section>
 
 <section class="card">
@@ -151,24 +146,13 @@ dl{text-align:left;margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap
 // ===== Konfiguration =====
 // Empfänger sind Platzhalter – echte Adressen und Versand im Backend hinterlegen.
 var CATS=[
- {id:"strasse",label:"Straße, Gehweg oder Radweg beschädigt",org:"Tiefbauamt",to:"tiefbauamt@example.org",fields:[
-  {k:"obj",l:"Was ist betroffen?",t:"select",o:["Schlagloch","Pflaster- oder Gehwegschaden","Bordstein","Radweg","Verkehrsschild","Sonstiges"]},
-  {k:"gef",l:"Besteht akute Gefahr?",t:"select",o:["Nein","Ja, bitte dringend prüfen"]}]},
- {id:"licht",label:"Straßenbeleuchtung defekt",org:"Stadtwerke Karlsruhe, Straßenbeleuchtung",to:"beleuchtung@example.org",fields:[
-  {k:"mast",l:"Nummer am Lichtmast (falls lesbar)",t:"text",max:20},
-  {k:"art",l:"Was ist das Problem?",t:"select",o:["Lampe aus","Lampe flackert","Mast beschädigt","Sonstiges"]}]},
- {id:"muell",label:"Müll, wilde Ablagerung oder Verschmutzung",org:"Team Sauberes Karlsruhe",to:"tsk@example.org",fields:[
-  {k:"art",l:"Art der Verschmutzung",t:"select",o:["Sperrmüll","Hausmüll","Graffiti","Hundekot","Glasscherben","Sonstiges"]},
-  {k:"menge",l:"Menge",t:"select",o:["Klein","Mittel","Groß"]}]},
- {id:"gruen",label:"Grünfläche, Baum oder Spielplatz",org:"Gartenbauamt",to:"gartenbauamt@example.org",fields:[
-  {k:"obj",l:"Was ist betroffen?",t:"select",o:["Baum oder Ast","Bank","Spielgerät","Verschmutzung auf dem Spielplatz","Grünfläche","Sonstiges"]},
-  {k:"gef",l:"Besteht akute Gefahr?",t:"select",o:["Nein","Ja, bitte dringend prüfen"]}]},
- {id:"kvv",label:"Haltestelle, Bus oder Bahn",org:"Karlsruher Verkehrsverbund (KVV)",to:"kvv@example.org",fields:[
-  {k:"halt",l:"Haltestelle oder Linie (falls bekannt)",t:"text",max:60},
-  {k:"art",l:"Was ist das Problem?",t:"select",o:["Haltestelle beschädigt oder verschmutzt","Fahrgastinformation defekt","Fahrkartenautomat defekt","Sonstiges"]}]},
- {id:"ordnung",label:"Ordnung und Sicherheit",org:"Ordnungs- und Bürgeramt",to:"ordnungsamt@example.org",fields:[
-  {k:"art",l:"Worum geht es?",t:"select",o:["Falschparken","Abgestelltes Fahrzeug oder Schrottfahrrad","Sonstiges"]}]},
- {id:"sonst",label:"Sonstiges",org:"Stadt Karlsruhe, Bürgerservice",to:"buergerservice@example.org",fields:[]}
+ {id:"verunreinigung",label:"Verunreinigungen",org:"Team Sauberes Karlsruhe",to:"tsk@example.org",subs:["test 1","test 2","test 3"]},
+ {id:"gefahr",label:"Gefahrenstellen",org:"Tiefbauamt",to:"tiefbauamt@example.org",subs:["test 4","test 5","test 6"]},
+ {id:"ampel",label:"Ampeln",org:"Tiefbauamt",to:"tiefbauamt@example.org",subs:["test 7","test 8","test 9"]},
+ {id:"verkehr",label:"Verkehrsverstöße/Verkehrsführung",org:"Ordnungs- und Bürgeramt",to:"ordnungsamt@example.org",subs:["test 10","test 11","test 12"]},
+ {id:"licht",label:"Straßenbeleuchtung",org:"Stadtwerke Karlsruhe, Straßenbeleuchtung",to:"beleuchtung@example.org",subs:["test 13","test 14","test 15"]},
+ {id:"escooter",label:"E-Scooter",org:"Ordnungs- und Bürgeramt",to:"ordnungsamt@example.org",subs:["test 16","test 17","test 18"]},
+ {id:"sonst",label:"Sonstiges",org:"Stadt Karlsruhe, Bürgerservice",to:"buergerservice@example.org",subs:["test 19","test 20","test 21"]}
 ];
 var MAX_BYTES=20*1024*1024, MAX_TXT=1000;
 // Vorerst gehen alle Meldungen an diese Adresse. Auf null setzen, um die Empfänger der Kategorien zu nutzen.
@@ -180,7 +164,7 @@ var STREETS=["Kaiserstraße","Karlstraße","Kriegsstraße","Waldstraße","Dougla
 // ===== Helfer =====
 var $=function(i){return document.getElementById(i)};
 var files=[];
-function show(id,msg){var e=$("e-"+id);e.textContent=msg||"";var inp=$({cat:"cat",txt:"txt",loc:"loc",mail:"mail",tel:"tel",file:"file",dsgvo:"dsgvo"}[id]);if(inp)inp.classList.toggle("invalid",!!msg)}
+function show(id,msg){var e=$("e-"+id);e.textContent=msg||"";var inp=$({cat:"cat",sub:"sub",txt:"txt",loc:"loc",mail:"mail",tel:"tel",file:"file",dsgvo:"dsgvo"}[id]);if(inp)inp.classList.toggle("invalid",!!msg)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function toPlain(s){return s.replace(/<[^>]*>/g,"").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u200B]/g,"").replace(/\r\n?/g,"\n")}
 function fmt(b){return (b/1048576).toFixed(1).replace(".",",")+" MB"}
@@ -190,11 +174,9 @@ var cat=$("cat");
 cat.innerHTML='<option value="">Bitte wählen</option>'+CATS.map(function(c){return '<option value="'+c.id+'">'+esc(c.label)+'</option>'}).join("");
 function curCat(){return CATS.filter(function(c){return c.id===cat.value})[0]}
 cat.onchange=function(){
- var c=curCat();$("catHint").textContent=c?"Zuständig: "+c.org:"";show("cat");
- $("extra").innerHTML=c?c.fields.map(function(f){
-  var h='<div class="f"><label for="x-'+f.k+'">'+esc(f.l)+'</label>';
-  h+=f.t==="select"?'<select id="x-'+f.k+'">'+f.o.map(function(o){return '<option>'+esc(o)+'</option>'}).join("")+'</select>':'<input id="x-'+f.k+'" maxlength="'+f.max+'">';
-  return h+'</div>'}).join(""):"";
+ var c=curCat(),sub=$("sub");$("catHint").textContent=c?"Zuständig: "+c.org:"";show("cat");
+ sub.innerHTML=c?'<option value="">Bitte wählen</option>'+c.subs.map(function(x){return '<option>'+esc(x)+'</option>'}).join(""):'<option value="">Bitte zuerst eine Kategorie wählen</option>';
+ sub.disabled=!c;show("sub");
 };
 
 // ===== Freitext: nur Plain-Text =====
@@ -306,8 +288,9 @@ var MAIL=/^[^\s@<>()]+@[^\s@<>()]+\.[A-Za-z]{2,}$/, TEL=/^\+?[0-9][0-9 \/\-()]{4
 function validate(){
  var ok=true,first=null;
  function bad(id,m){show(id,m);ok=false;if(!first)first=id}
- ["cat","txt","loc","mail","tel","dsgvo"].forEach(function(i){show(i)});
+ ["cat","sub","txt","loc","mail","tel","dsgvo"].forEach(function(i){show(i)});
  if(!cat.value)bad("cat","Bitte wählen Sie eine Kategorie.");
+ else if(!$("sub").value)bad("sub","Bitte wählen Sie eine Unterkategorie.");
  var t=toPlain(txt.value).trim();
  if(t.length<10)bad("txt","Bitte beschreiben Sie die Meldung in mindestens 10 Zeichen.");
  if(!loc.value.trim())bad("loc","Bitte geben Sie einen Standort an.");
@@ -315,7 +298,7 @@ function validate(){
  var m=$("mail").value.trim();if(m&&!MAIL.test(m))bad("mail","Das sieht nicht nach einer E-Mail-Adresse aus.");
  var p=$("tel").value.trim();if(p&&!TEL.test(p))bad("tel","Bitte nur Ziffern, Leerzeichen und + / - ( ) verwenden.");
  if(!$("dsgvo").checked)bad("dsgvo","Bitte stimmen Sie der Datenverarbeitung zu.");
- if(first){var el=$({cat:"cat",txt:"txt",loc:"loc",mail:"mail",tel:"tel",dsgvo:"dsgvo"}[first]);el.scrollIntoView({block:"center"});el.focus()}
+ if(first){var el=$({cat:"cat",sub:"sub",txt:"txt",loc:"loc",mail:"mail",tel:"tel",dsgvo:"dsgvo"}[first]);el.scrollIntoView({block:"center"});el.focus()}
  return ok;
 }
 loc.addEventListener("input",function(){delete loc.dataset.geo});
@@ -323,13 +306,13 @@ loc.addEventListener("input",function(){delete loc.dataset.geo});
 // ===== Absenden =====
 $("f").addEventListener("submit",function(e){
  e.preventDefault();if(!validate())return;
- var c=curCat(),extra=c.fields.map(function(f){return [f.l,$("x-"+f.k).value.trim()]}).filter(function(x){return x[1]});
+ var c=curCat(),extra=[["Unterkategorie",$("sub").value]];
  var name=[$("vn").value.trim(),$("nn").value.trim()].filter(Boolean).join(" ");
  var data={kategorie:c.label,organisation:c.org,empfaenger:TEST_RECIPIENT||c.to,hinweis:toPlain(txt.value).trim(),standort:loc.value.trim(),koordinaten:loc.dataset.geo||null,zusatz:extra,anhaenge:files.map(function(f){return f.name+" ("+fmt(f.size)+")"}),email:$("mail").value.trim(),telefon:$("tel").value.trim(),name:name};
  // Hier würde der Aufruf ans Backend stehen, z. B. fetch("/api/meldungen",{method:"POST",body:FormData}),
  // das die E-Mail an data.empfaenger versendet und eine Vorgangsnummer zurückgibt.
  var id="KA-"+new Date().getFullYear()+"-"+String(Math.floor(Math.random()*90000)+10000);
- var rows=[["Vorgang",id],["Kategorie",c.label],["Zuständig",c.org],["Standort",data.standort],["Anhänge",files.length?files.length+" Datei(en), "+fmt(total()):"keine"]];
+ var rows=[["Vorgang",id],["Kategorie",c.label],["Unterkategorie",$("sub").value],["Zuständig",c.org],["Standort",data.standort],["Anhänge",files.length?files.length+" Datei(en), "+fmt(total()):"keine"]];
  $("sum").innerHTML=rows.map(function(r){return "<dt>"+r[0]+"</dt><dd>"+esc(r[1])+"</dd>"}).join("");
  var body=["An: "+data.empfaenger,"Betreff: Bürgermeldung "+id+" – "+c.label,"Zuständige Stelle: "+c.org,"","Beschreibung:",data.hinweis,"","Standort: "+data.standort+(data.koordinaten?" ("+data.koordinaten+")":"")]
   .concat(extra.map(function(x){return x[0]+": "+x[1]})).concat(["Anhänge: "+(data.anhaenge.join(", ")||"keine"),"","Rückmeldung an: "+(data.email||"nicht angegeben"),"Telefon: "+(data.telefon||"nicht angegeben"),"Name: "+(data.name||"nicht angegeben")]).join("\n");
