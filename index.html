@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Meldung abgeben – KA-Feedback neu</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#16203a;--mute:#5d6882;--line:#dfe4f0;--acc:#e2001a;--acc-ink:#fff;--acc-soft:#fdeaec;--err:#c62f3f;--ok:#14804a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1424;--card:#181f36;--ink:#eaeefc;--mute:#9aa6c6;--line:#2a3354;--acc:#ff5a6b;--acc-ink:#0f1424;--acc-soft:#3a1f2a;--err:#ff7b88;--ok:#4fd18b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1424;--card:#181f36;--ink:#eaeefc;--mute:#9aa6c6;--line:#2a3354;--acc:#ff5a6b;--acc-ink:#0f1424;--acc-soft:#3a1f2a;--err:#ff7b88;--ok:#4fd18b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.6rem;line-height:1.2;margin:8px 0 6px;letter-spacing:-.01em}
+.sub{font-size:1.15rem;font-weight:600;color:var(--acc);margin:0 0 10px}
+.note{background:var(--acc-soft);border-radius:14px;padding:12px 14px;margin:0 0 16px;font-size:.92rem;text-align:left}
+.pv{white-space:pre-wrap;font:inherit;font-size:.9rem;background:var(--bg);padding:12px;border-radius:12px;overflow-wrap:anywhere}
+.lead{color:var(--mute);margin:0 0 20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:14px}
+.card h2{font-size:1.05rem;margin:0 0 14px}
+.f{margin-bottom:16px}.f:last-child{margin-bottom:0}
+label,.lbl{display:block;font-weight:600;margin-bottom:6px}
+.req::after{content:" *";color:var(--err)}
+.hint{color:var(--mute);font-size:.85rem;margin-top:5px}
+input,select,textarea{width:100%;font:inherit;color:inherit;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea{min-height:130px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,.drop:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.invalid{border-color:var(--err)}
+.err{color:var(--err);font-size:.85rem;margin-top:5px;min-height:0}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 200px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:999px;padding:12px 20px;cursor:pointer;background:var(--acc);color:var(--acc-ink)}
+.btn.sec{background:var(--acc-soft);color:var(--acc)}
+.btn.big{width:100%;padding:15px;font-size:1.05rem}
+.loc{position:relative}
+.sugg{list-style:none;margin:4px 0 0;padding:4px;position:absolute;left:0;right:0;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15);max-height:220px;overflow:auto}
+.sugg li{padding:10px 12px;border-radius:8px;cursor:pointer}
+.sugg li[aria-selected="true"],.sugg li:hover{background:var(--acc-soft)}
+.drop{display:block;border:2px dashed var(--line);border-radius:16px;padding:22px;text-align:center;cursor:pointer;color:var(--mute)}
+.drop.over{border-color:var(--acc);background:var(--acc-soft)}
+.bar{height:6px;border-radius:6px;background:var(--line);margin-top:10px;overflow:hidden}.bar i{display:block;height:100%;width:0;background:var(--acc)}
+.bar.full i{background:var(--err)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;margin-top:12px}
+.th{position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--mute);text-align:center}
+.th img,.th video{width:100%;height:100%;object-fit:cover}
+.th button{position:absolute;top:4px;right:4px;border:0;border-radius:50%;width:26px;height:26px;background:rgba(0,0,0,.65);color:#fff;cursor:pointer;font-size:16px;line-height:1}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400}.chk input{width:auto;margin-top:5px}
+details summary{cursor:pointer;font-weight:600}
+.done{text-align:center}.done .tick{font-size:2.4rem;color:var(--ok)}
+dl{text-align:left;margin:16px 0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}dt{color:var(--mute)}dd{margin:0;overflow-wrap:anywhere}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s}}
+</style>
+</head>
+<body>
+<main>
+<div id="formView">
+<h1>Willkommen bei KA-Feedback</h1>
+<p class="sub">Gemeinsam für eine saubere und lebenswerte Stadt.</p>
+<p class="lead">Mit KA-Feedback können Meldungen zu Mängeln und Gefahrenstellen im öffentlichen Raum direkt an die zuständige Fachstelle gemeldet werden.</p>
+<aside class="note"><strong>Lieber telefonisch melden?</strong> Sie können Ihre Meldung auch telefonisch abgeben: <a href="tel:+49721115" style="color:var(--acc);font-weight:700">0721 115</a></aside>
+
+<form id="f" novalidate>
+<section class="card">
+<h2>Ihre Meldung</h2>
+<div class="f">
+<label class="req" for="cat">Kategorie</label>
+<select id="cat" required></select>
+<div class="hint" id="catHint"></div><div class="err" id="e-cat"></div>
+</div>
+<div class="f">
+<label class="req" for="txt">Beschreibung</label>
+<textarea id="txt" maxlength="1000" placeholder="Beschreiben Sie kurz, was Sie gesehen haben." aria-describedby="cnt e-txt"></textarea>
+<div class="hint"><span id="cnt">0 / 1000</span> Zeichen · nur Text, Formatierungen werden entfernt</div><div class="err" id="e-txt"></div>
+</div>
+<div id="extra"></div>
+</section>
+
+<section class="card">
+<h2>Ort der Meldung</h2>
+<div class="f loc">
+<label class="req" for="loc">Standort</label>
+<div class="row" style="flex-wrap:nowrap">
+<input id="loc" type="text" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="sg" placeholder="Straße und Hausnummer in Karlsruhe" style="flex:1 1 auto">
+<button type="button" class="btn sec" id="gps" style="flex:0 0 auto">Mein Standort</button>
+</div>
+<ul class="sugg" id="sg" role="listbox" hidden></ul>
+<div class="hint" id="locHint">Nur Orte innerhalb von Karlsruhe sind möglich.</div><div class="err" id="e-loc"></div>
+</div>
+</section>
+
+<section class="card">
+<h2>Fotos oder Video</h2>
+<label class="drop" id="drop" tabindex="0" for="file">
+<strong>Dateien auswählen</strong> oder hierher ziehen<br><span class="hint">Mehrere Bilder oder Videos möglich</span>
+</label>
+<input id="file" type="file" accept="image/*,video/*" multiple hidden>
+<div class="hint" style="margin-top:8px">Bitte fotografieren Sie nur den öffentlichen Raum und laden Sie keine Fotos hoch, die Personen porträtartig zeigen.</div>
+<div class="bar" id="bar"><i></i></div>
+<div class="hint" id="size">0 MB von 20 MB belegt</div><div class="err" id="e-file"></div>
+<div class="thumbs" id="thumbs"></div>
+</section>
+
+<section class="card">
+<h2>Kontakt</h2>
+<p class="hint" style="margin:-6px 0 14px">Bitte hinterlegen Sie eine E-Mail-Adresse oder Telefonnummer. Wenn wir bei Rückfragen niemanden erreichen können, muss Ihre Meldung aus Mangel an Informationen geschlossen werden.</p>
+<div class="f">
+<label for="mail">E-Mail für Status-Updates</label>
+<input id="mail" type="email" inputmode="email" autocomplete="email" maxlength="254" placeholder="name@beispiel.de">
+<div class="hint">Freiwillig. Sie erhalten eine Bestätigung mit den Angaben Ihrer Meldung und Informationen zum Stand.</div><div class="err" id="e-mail"></div>
+</div>
+<div class="f">
+<label for="tel">Telefonnummer</label>
+<input id="tel" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="0721 1234567">
+<div class="hint">Freiwillig. Für Rückfragen zu Ihrer Meldung.</div><div class="err" id="e-tel"></div>
+</div>
+<details>
+<summary>Name angeben (freiwillig)</summary>
+<div class="row" style="margin-top:12px">
+<div class="f"><label for="vn">Vorname</label><input id="vn" autocomplete="given-name" maxlength="60"></div>
+<div class="f"><label for="nn">Name</label><input id="nn" autocomplete="family-name" maxlength="60"></div>
+</div>
+<div class="hint">Für die Bearbeitung der Meldung ist kein Name nötig.</div>
+</details>
+</section>
+
+<section class="card">
+<details style="margin-bottom:14px"><summary>Hinweise zur Datenverarbeitung</summary>
+<p class="hint" style="margin-top:10px">Ihre Angaben (Beschreibung, Standort, Fotos/Videos und freiwillige Kontaktdaten) werden verwendet, um Ihre Meldung zu bearbeiten und an die zuständige Fachstelle weiterzuleiten.</p></details>
+<label class="chk"><input type="checkbox" id="dsgvo"><span>Ich habe die Hinweise zum Datenschutz gelesen und bin einverstanden, dass meine Angaben zur Bearbeitung an die zuständige Stelle übermittelt werden.</span></label>
+<div class="err" id="e-dsgvo"></div>
+</section>
+<button class="btn big" type="submit" id="send">Meldung senden</button>
+</form>
+</div>
+
+<section class="card done" id="doneView" hidden>
+<div class="tick" aria-hidden="true">✓</div>
+<h1 id="doneTitle">Danke für Ihre Meldung</h1>
+<p class="lead" id="doneMsg"></p>
+<p class="note" id="doneNote" hidden></p>
+<dl id="sum"></dl>
+<details style="text-align:left"><summary>E-Mail-Vorschau an die Organisation</summary><pre id="mailPrev" style="white-space:pre-wrap;font:inherit;font-size:.9rem;background:var(--bg);padding:12px;border-radius:12px;overflow-wrap:anywhere"></pre></details>
+<details id="confDet" style="text-align:left;margin-top:8px" hidden><summary>Bestätigungs-E-Mail an Meldende (Vorschau)</summary><pre id="confPrev" class="pv" style="margin-top:10px"></pre></details>
+<p><button class="btn sec" id="again" type="button">Neue Meldung erfassen</button></p>
+</section>
+</main>
+
+<script>
+// ===== Konfiguration =====
+// Empfänger sind Platzhalter – echte Adressen und Versand im Backend hinterlegen.
+var CATS=[
+ {id:"strasse",label:"Straße, Gehweg oder Radweg beschädigt",org:"Tiefbauamt",to:"tiefbauamt@example.org",fields:[
+  {k:"obj",l:"Was ist betroffen?",t:"select",o:["Schlagloch","Pflaster- oder Gehwegschaden","Bordstein","Radweg","Verkehrsschild","Sonstiges"]},
+  {k:"gef",l:"Besteht akute Gefahr?",t:"select",o:["Nein","Ja, bitte dringend prüfen"]}]},
+ {id:"licht",label:"Straßenbeleuchtung defekt",org:"Stadtwerke Karlsruhe, Straßenbeleuchtung",to:"beleuchtung@example.org",fields:[
+  {k:"mast",l:"Nummer am Lichtmast (falls lesbar)",t:"text",max:20},
+  {k:"art",l:"Was ist das Problem?",t:"select",o:["Lampe aus","Lampe flackert","Mast beschädigt","Sonstiges"]}]},
+ {id:"muell",label:"Müll, wilde Ablagerung oder Verschmutzung",org:"Team Sauberes Karlsruhe",to:"tsk@example.org",fields:[
+  {k:"art",l:"Art der Verschmutzung",t:"select",o:["Sperrmüll","Hausmüll","Graffiti","Hundekot","Glasscherben","Sonstiges"]},
+  {k:"menge",l:"Menge",t:"select",o:["Klein","Mittel","Groß"]}]},
+ {id:"gruen",label:"Grünfläche, Baum oder Spielplatz",org:"Gartenbauamt",to:"gartenbauamt@example.org",fields:[
+  {k:"obj",l:"Was ist betroffen?",t:"select",o:["Baum oder Ast","Bank","Spielgerät","Verschmutzung auf dem Spielplatz","Grünfläche","Sonstiges"]},
+  {k:"gef",l:"Besteht akute Gefahr?",t:"select",o:["Nein","Ja, bitte dringend prüfen"]}]},
+ {id:"kvv",label:"Haltestelle, Bus oder Bahn",org:"Karlsruher Verkehrsverbund (KVV)",to:"kvv@example.org",fields:[
+  {k:"halt",l:"Haltestelle oder Linie (falls bekannt)",t:"text",max:60},
+  {k:"art",l:"Was ist das Problem?",t:"select",o:["Haltestelle beschädigt oder verschmutzt","Fahrgastinformation defekt","Fahrkartenautomat defekt","Sonstiges"]}]},
+ {id:"ordnung",label:"Ordnung und Sicherheit",org:"Ordnungs- und Bürgeramt",to:"ordnungsamt@example.org",fields:[
+  {k:"art",l:"Worum geht es?",t:"select",o:["Falschparken","Abgestelltes Fahrzeug oder Schrottfahrrad","Sonstiges"]}]},
+ {id:"sonst",label:"Sonstiges",org:"Stadt Karlsruhe, Bürgerservice",to:"buergerservice@example.org",fields:[]}
+];
+var MAX_BYTES=20*1024*1024, MAX_TXT=1000;
+// Vorerst gehen alle Meldungen an diese Adresse. Auf null setzen, um die Empfänger der Kategorien zu nutzen.
+var TEST_RECIPIENT="info@we.network";
+var NOREPLY="no-reply@example.org"; // Platzhalter: Absender der Bestätigungs-Mail
+var KA_BOX={s:48.95,n:49.10,w:8.28,e:8.50};
+var STREETS=["Kaiserstraße","Karlstraße","Kriegsstraße","Waldstraße","Douglasstraße","Herrenstraße","Erbprinzenstraße","Amalienstraße","Adlerstraße","Ettlinger Straße","Durlacher Allee","Haid-und-Neu-Straße","Moltkestraße","Hertzstraße","Käppelestraße","Rintheimer Straße","Rüppurrer Straße","Kaiserallee","Reinhold-Frank-Straße","Marktplatz","Europaplatz","Werderplatz","Gutenbergplatz","Ludwigsplatz","Mühlburger Tor","Alter Schlachthof","Stephanienstraße","Sophienstraße","Bannwaldallee","Ebertstraße","Gartenstraße","Brauerstraße","Baumeisterstraße","Bismarckstraße","Yorckstraße","Vorholzstraße","Linkenheimer Landstraße","Pfinztalstraße","Rastatter Straße","Leopoldstraße","Lameystraße","Schlossplatz","Kronenplatz","Durlacher Tor","Ettlinger Tor","Akademiestraße","Zähringerstraße","Wilhelmstraße","Röntgenstraße"];
+
+// ===== Helfer =====
+var $=function(i){return document.getElementById(i)};
+var files=[];
+function show(id,msg){var e=$("e-"+id);e.textContent=msg||"";var inp=$({cat:"cat",txt:"txt",loc:"loc",mail:"mail",tel:"tel",file:"file",dsgvo:"dsgvo"}[id]);if(inp)inp.classList.toggle("invalid",!!msg)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function toPlain(s){return s.replace(/<[^>]*>/g,"").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u200B]/g,"").replace(/\r\n?/g,"\n")}
+function fmt(b){return (b/1048576).toFixed(1).replace(".",",")+" MB"}
+
+// ===== Kategorie =====
+var cat=$("cat");
+cat.innerHTML='<option value="">Bitte wählen</option>'+CATS.map(function(c){return '<option value="'+c.id+'">'+esc(c.label)+'</option>'}).join("");
+function curCat(){return CATS.filter(function(c){return c.id===cat.value})[0]}
+cat.onchange=function(){
+ var c=curCat();$("catHint").textContent=c?"Zuständig: "+c.org:"";show("cat");
+ $("extra").innerHTML=c?c.fields.map(function(f){
+  var h='<div class="f"><label for="x-'+f.k+'">'+esc(f.l)+'</label>';
+  h+=f.t==="select"?'<select id="x-'+f.k+'">'+f.o.map(function(o){return '<option>'+esc(o)+'</option>'}).join("")+'</select>':'<input id="x-'+f.k+'" maxlength="'+f.max+'">';
+  return h+'</div>'}).join(""):"";
+};
+
+// ===== Freitext: nur Plain-Text =====
+var txt=$("txt");
+txt.addEventListener("paste",function(e){
+ e.preventDefault();
+ var t=toPlain((e.clipboardData||window.clipboardData).getData("text/plain"));
+ var s=txt.selectionStart,en=txt.selectionEnd,v=txt.value;
+ txt.value=(v.slice(0,s)+t+v.slice(en)).slice(0,MAX_TXT);
+ txt.selectionStart=txt.selectionEnd=Math.min(s+t.length,MAX_TXT);txt.dispatchEvent(new Event("input"));
+});
+txt.addEventListener("input",function(){$("cnt").textContent=txt.value.length+" / "+MAX_TXT;if(txt.value.trim())show("txt")});
+
+// ===== Standort =====
+var loc=$("loc"),sg=$("sg"),idx=-1,picked=null;
+function closeSg(){sg.hidden=true;loc.setAttribute("aria-expanded","false");idx=-1}
+// Adresssuche: Für den Produktivbetrieb GEOCODER durch einen eigenen Dienst ersetzen (z. B. Geoportal Karlsruhe, selbst gehostetes Photon).
+// Ist der Dienst nicht erreichbar, greift die lokale Straßenliste als Rückfall.
+var GEOCODER="https://photon.komoot.io/api/";
+var cur=[],timer=null,ctl=null;
+function pick(it){loc.value=it.label;picked=it.label;closeSg();show("loc");if(it.lat)loc.dataset.geo=it.lat+","+it.lon;else delete loc.dataset.geo}
+function render(items){
+ cur=items;
+ if(!items.length){closeSg();return}
+ sg.innerHTML=items.map(function(it,i){return '<li role="option" data-i="'+i+'">'+esc(it.label)+'</li>'}).join("");
+ sg.hidden=false;loc.setAttribute("aria-expanded","true");
+ Array.prototype.forEach.call(sg.children,function(li){li.onmousedown=function(e){e.preventDefault();pick(cur[+li.dataset.i])}});
+}
+function local(q){
+ q=q.toLowerCase().replace(/,?\s*karlsruhe$/,"").replace(/\s+\d+\w*$/,"");
+ return q.length<2?[]:STREETS.filter(function(s){return s.toLowerCase().indexOf(q)>-1}).slice(0,6).map(function(s){return {label:s+", Karlsruhe"}});
+}
+function remote(q){
+ if(ctl)ctl.abort();ctl=new AbortController();var c=ctl,t=setTimeout(function(){c.abort()},4000);
+ var u=GEOCODER+"?q="+encodeURIComponent(q+" Karlsruhe")+"&limit=10&lang=de&bbox="+[KA_BOX.w,KA_BOX.s,KA_BOX.e,KA_BOX.n].join(",");
+ return fetch(u,{signal:c.signal}).then(function(r){clearTimeout(t);if(!r.ok)throw new Error("http");return r.json()}).then(function(j){
+  var seen={};
+  return (j.features||[]).map(function(f){
+   var p=f.properties||{},g=(f.geometry||{}).coordinates;
+   if(!g||g[1]<KA_BOX.s||g[1]>KA_BOX.n||g[0]<KA_BOX.w||g[0]>KA_BOX.e)return null;
+   if(p.city&&p.city!=="Karlsruhe")return null;
+   var st=p.street||(p.osm_key==="highway"?p.name:""),l;
+   if(st)l=st+(p.housenumber?" "+p.housenumber:"");else if(p.name)l=p.name;else return null;
+   if(p.name&&p.street&&p.name!==p.street&&!p.housenumber)l=p.name+", "+p.street;
+   l+=", "+(p.postcode?p.postcode+" ":"")+"Karlsruhe";
+   if(seen[l])return null;seen[l]=1;
+   return {label:l,lat:g[1].toFixed(6),lon:g[0].toFixed(6)};
+  }).filter(Boolean).slice(0,6);
+ });
+}
+loc.addEventListener("input",function(){
+ picked=null;var q=loc.value.trim();clearTimeout(timer);
+ if(q.length<3){render(local(q));return}
+ timer=setTimeout(function(){
+  remote(q).then(function(r){if(loc.value.trim()===q)render(r.length?r:local(q))})
+   .catch(function(e){if(loc.value.trim()===q)render(local(q))});
+ },250);
+});
+loc.addEventListener("keydown",function(e){
+ var li=sg.children;if(sg.hidden||!li.length)return;
+ if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();idx=(idx+(e.key==="ArrowDown"?1:-1)+li.length)%li.length;Array.prototype.forEach.call(li,function(x,i){x.setAttribute("aria-selected",i===idx)})}
+ else if(e.key==="Enter"&&idx>-1){e.preventDefault();pick(cur[idx])}
+ else if(e.key==="Escape")closeSg();
+});
+loc.addEventListener("blur",closeSg);
+$("gps").onclick=function(){
+ if(!navigator.geolocation){show("loc","Standortbestimmung wird von diesem Gerät nicht unterstützt.");return}
+ $("locHint").textContent="Standort wird ermittelt …";
+ navigator.geolocation.getCurrentPosition(function(p){
+  var la=p.coords.latitude,lo=p.coords.longitude;$("locHint").textContent="Nur Orte innerhalb von Karlsruhe sind möglich.";
+  if(la<KA_BOX.s||la>KA_BOX.n||lo<KA_BOX.w||lo>KA_BOX.e){show("loc","Ihr Standort liegt außerhalb von Karlsruhe.");return}
+  pick("Aktueller Standort ("+la.toFixed(5)+", "+lo.toFixed(5)+")");loc.dataset.geo=la+","+lo;
+ },function(){$("locHint").textContent="Nur Orte innerhalb von Karlsruhe sind möglich.";show("loc","Standort nicht verfügbar. Bitte Adresse eingeben.")},{enableHighAccuracy:true,timeout:10000});
+};
+
+// ===== Upload =====
+var inp=$("file"),drop=$("drop");
+function total(){return files.reduce(function(a,f){return a+f.size},0)}
+function redraw(){
+ var t=total();$("size").textContent=fmt(t)+" von 20 MB belegt";
+ $("bar").firstChild.style.width=Math.min(100,t/MAX_BYTES*100)+"%";$("bar").classList.toggle("full",t>MAX_BYTES*.95);
+ var box=$("thumbs");box.innerHTML="";
+ files.forEach(function(f,i){
+  var d=document.createElement("div");d.className="th";
+  var u=URL.createObjectURL(f);
+  if(f.type.indexOf("image/")===0){var im=new Image();im.src=u;im.alt=f.name;d.appendChild(im)}
+  else if(f.type.indexOf("video/")===0){var v=document.createElement("video");v.src=u;v.muted=true;v.preload="metadata";d.appendChild(v)}
+  var b=document.createElement("button");b.type="button";b.textContent="×";b.setAttribute("aria-label",f.name+" entfernen");b.onclick=function(){files.splice(i,1);redraw()};
+  d.appendChild(b);box.appendChild(d);
+ });
+}
+function addFiles(list){
+ var rej=[];
+ Array.prototype.forEach.call(list,function(f){
+  if(!/^(image|video)\//.test(f.type)){rej.push(f.name+" ist kein Bild oder Video.");return}
+  if(total()+f.size>MAX_BYTES){rej.push(f.name+" passt nicht mehr in die 20 MB.");return}
+  files.push(f);
+ });
+ show("file",rej.join(" "));redraw();
+}
+inp.onchange=function(){addFiles(inp.files);inp.value=""};
+drop.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();inp.click()}};
+["dragover","dragenter"].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.add("over")})});
+["dragleave","drop"].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.remove("over")})});
+drop.addEventListener("drop",function(e){addFiles(e.dataTransfer.files)});
+
+// ===== Validierung =====
+var MAIL=/^[^\s@<>()]+@[^\s@<>()]+\.[A-Za-z]{2,}$/, TEL=/^\+?[0-9][0-9 \/\-()]{4,18}[0-9]$/;
+function validate(){
+ var ok=true,first=null;
+ function bad(id,m){show(id,m);ok=false;if(!first)first=id}
+ ["cat","txt","loc","mail","tel","dsgvo"].forEach(function(i){show(i)});
+ if(!cat.value)bad("cat","Bitte wählen Sie eine Kategorie.");
+ var t=toPlain(txt.value).trim();
+ if(t.length<10)bad("txt","Bitte beschreiben Sie die Meldung in mindestens 10 Zeichen.");
+ if(!loc.value.trim())bad("loc","Bitte geben Sie einen Standort an.");
+ else if(!picked&&!loc.dataset.geo)bad("loc","Bitte wählen Sie einen Standort aus der Vorschlagsliste oder nutzen Sie „Mein Standort“.");
+ var m=$("mail").value.trim();if(m&&!MAIL.test(m))bad("mail","Das sieht nicht nach einer E-Mail-Adresse aus.");
+ var p=$("tel").value.trim();if(p&&!TEL.test(p))bad("tel","Bitte nur Ziffern, Leerzeichen und + / - ( ) verwenden.");
+ if(!$("dsgvo").checked)bad("dsgvo","Bitte stimmen Sie der Datenverarbeitung zu.");
+ if(first){var el=$({cat:"cat",txt:"txt",loc:"loc",mail:"mail",tel:"tel",dsgvo:"dsgvo"}[first]);el.scrollIntoView({block:"center"});el.focus()}
+ return ok;
+}
+loc.addEventListener("input",function(){delete loc.dataset.geo});
+
+// ===== Absenden =====
+$("f").addEventListener("submit",function(e){
+ e.preventDefault();if(!validate())return;
+ var c=curCat(),extra=c.fields.map(function(f){return [f.l,$("x-"+f.k).value.trim()]}).filter(function(x){return x[1]});
+ var name=[$("vn").value.trim(),$("nn").value.trim()].filter(Boolean).join(" ");
+ var data={kategorie:c.label,organisation:c.org,empfaenger:TEST_RECIPIENT||c.to,hinweis:toPlain(txt.value).trim(),standort:loc.value.trim(),koordinaten:loc.dataset.geo||null,zusatz:extra,anhaenge:files.map(function(f){return f.name+" ("+fmt(f.size)+")"}),email:$("mail").value.trim(),telefon:$("tel").value.trim(),name:name};
+ // Hier würde der Aufruf ans Backend stehen, z. B. fetch("/api/meldungen",{method:"POST",body:FormData}),
+ // das die E-Mail an data.empfaenger versendet und eine Vorgangsnummer zurückgibt.
+ var id="KA-"+new Date().getFullYear()+"-"+String(Math.floor(Math.random()*90000)+10000);
+ var rows=[["Vorgang",id],["Kategorie",c.label],["Zuständig",c.org],["Standort",data.standort],["Anhänge",files.length?files.length+" Datei(en), "+fmt(total()):"keine"]];
+ $("sum").innerHTML=rows.map(function(r){return "<dt>"+r[0]+"</dt><dd>"+esc(r[1])+"</dd>"}).join("");
+ var body=["An: "+data.empfaenger,"Betreff: Bürgermeldung "+id+" – "+c.label,"Zuständige Stelle: "+c.org,"","Beschreibung:",data.hinweis,"","Standort: "+data.standort+(data.koordinaten?" ("+data.koordinaten+")":"")]
+  .concat(extra.map(function(x){return x[0]+": "+x[1]})).concat(["Anhänge: "+(data.anhaenge.join(", ")||"keine"),"","Rückmeldung an: "+(data.email||"nicht angegeben"),"Telefon: "+(data.telefon||"nicht angegeben"),"Name: "+(data.name||"nicht angegeben")]).join("\n");
+ $("mailPrev").textContent=body;
+ var em=data.email,tl=data.telefon,M=$("doneMsg"),N=$("doneNote");
+ N.hidden=true;$("confDet").hidden=true;
+ if(em){
+  M.textContent="Ihre Meldung wird bearbeitet. Weitere Informationen über den Status Ihrer Meldung folgen per E-Mail an "+em+".";
+  $("confPrev").textContent=["Von: "+NOREPLY,"An: "+em,"Betreff: Ihre Meldung "+id+" ist eingegangen","","Vielen Dank für Ihre Meldung. Sie wird bearbeitet, weitere Informationen zum Status folgen per E-Mail.","","Ihre Angaben:","Kategorie: "+c.label,"Beschreibung: "+data.hinweis,"Standort: "+data.standort].concat(extra.map(function(x){return x[0]+": "+x[1]})).concat(["Anhänge: "+(data.anhaenge.join(", ")||"keine"),"","Bitte antworten Sie nicht auf diese E-Mail."]).join("\n");
+  $("confDet").hidden=false;
+ }else if(tl){
+  M.textContent="Ihre Meldung wird bearbeitet. Da Sie keine E-Mail-Adresse angegeben haben, erhalten Sie keine Informationen zum Status. Bei Rückfragen melden wir uns unter "+tl+". Bitte notieren Sie sich die Vorgangsnummer.";
+ }else{
+  M.textContent="Ihre Meldung wird bearbeitet. Da Sie keine E-Mail-Adresse angegeben haben, erhalten Sie keine Informationen zum Status. Bitte notieren Sie sich die Vorgangsnummer.";
+  N.textContent="Sie haben keine Kontaktdaten hinterlegt. Bei Rückfragen können wir Sie nicht erreichen, die Meldung muss dann aus Mangel an Informationen geschlossen werden.";N.hidden=false;
+ }
+ $("formView").hidden=true;$("doneView").hidden=false;window.scrollTo(0,0);
+});
+$("again").onclick=function(){$("f").reset();files=[];picked=null;delete loc.dataset.geo;cat.onchange();redraw();$("cnt").textContent="0 / "+MAX_TXT;$("doneView").hidden=true;$("formView").hidden=false;window.scrollTo(0,0)};
+</script>
+</body>
+</html>
